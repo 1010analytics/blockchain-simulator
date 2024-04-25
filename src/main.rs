@@ -1,15 +1,17 @@
 use std::io;
-use std::io::Write; 
-use sha2::{Sha256, Digest}; 
+use std::io::Write;
+use sha2::{Sha256, Digest};
+use std::sync::{Arc, Mutex};
+use std::thread;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 struct Transaction {
     sender: String,
     receiver: String,
     amount: f64,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 struct Block {
     previous_hash: String,
     transactions: Vec<Transaction>,
@@ -81,23 +83,26 @@ fn read_input(prompt: &str) -> String {
 
 fn main() {
     let mut blockchain = Blockchain::new();
+    let blockchain = Arc::new(Mutex::new(blockchain));
 
     loop {
+        let blockchain = Arc::clone(&blockchain);
         println!("Enter a new transaction details:");
         let sender = read_input("Enter sender: ");
         let receiver = read_input("Enter receiver: ");
         let amount = read_input("Enter amount: ");
-
         let amount: f64 = amount.parse().expect("Expected a number for amount");
 
-        let transaction = Transaction {
-            sender,
-            receiver,
-            amount,
-        };
+        thread::spawn(move || {
+            let transaction = Transaction {
+                sender,
+                receiver,
+                amount,
+            };
 
-        let block = Block::new(vec![transaction], blockchain.blocks.last().unwrap().hash.clone());
-        blockchain.add_block(block);
+            let block = Block::new(vec![transaction], blockchain.lock().unwrap().blocks.last().unwrap().hash.clone());
+            blockchain.lock().unwrap().add_block(block);
+        });
 
         let cont = read_input("Add another transaction? (yes/no): ");
         if cont.to_lowercase() != "yes" {
@@ -105,5 +110,5 @@ fn main() {
         }
     }
 
-    println!("Blockchain: {:?}", blockchain);
+    println!("Blockchain: {:?}", *blockchain.lock().unwrap());
 }
