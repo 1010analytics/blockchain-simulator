@@ -1,8 +1,8 @@
-# Blockchain Practice Project
+# Blockchain Simulator
 
 ## Overview
 
-This Rust Blockchain Simulator is a practice project designed to introduce me to the world of blockchain technology. It serves as a platform to consolidate my Rust programming skills and to understand blockchain fundamentals. The project is structured in such a way that it can evolve; as I learn more advanced Rust features, I can integrate them to expand the blockchain's capabilities.
+This Rust Blockchain Simulator serves as a platform to consolidate my Rust programming skills and to understand blockchain fundamentals. The project is structured in such a way that it can evolve; as I learn more advanced Rust features, I can integrate them to expand the blockchain's capabilities.
 
 ## Current Implementation
 
